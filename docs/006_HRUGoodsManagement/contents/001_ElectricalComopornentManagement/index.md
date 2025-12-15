@@ -77,8 +77,12 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 </div>
 
 <script>
-    // ★★★ ステップ2-2で取得したGASのウェブアプリURLに置き換えてください ★★★
+    // ★★★ データ更新（書き込み）のために、GASのウェブアプリURLはそのまま残します ★★★
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbxJUVyEL2w8CkgHKh3NTBqS-bAr6qHqSElTJLO2N4yELR5wzXwiEhc1QD_cjuuI8_98/exec';
+
+    // ★★★ データ読み込みのために、ウェブに公開したCSVのURLを設定します ★★★
+    // ここをあなたのCSV公開URLに置き換えてください
+    const PUBLIC_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_ddlsooRb5rX5xodrbxiJRRbo3mz_-lyfVOx4quvy5wBLJ42CAO_I19UVE1t_QXv165GEFe6jZ0kY/pub?gid=893393387&single=true&output=csv"; 
     
     let componentData = []; // スプレッドシートから読み込んだ全データ
 
@@ -100,20 +104,59 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         }
     }
 
-    /** 部品リストをGASから取得し、テーブルに表示する */
+    // --- [変更点] GAS経由から直接CSV読み込みに変更 ---
+    /** 部品リストをCSV公開URLから取得し、テーブルに表示する */
     async function loadComponentList() {
         try {
-            const response = await fetch(GAS_URL);
-            if (!response.ok) throw new Error('GASからのデータ取得に失敗しました');
+            // GAS_URLではなく、CSV公開URLにアクセス
+            const response = await fetch(PUBLIC_CSV_URL); 
+            if (!response.ok) throw new Error('CSV公開URLからのデータ取得に失敗しました');
             
-            componentData = await response.json();
+            // CSVテキストとして取得
+            const csvText = await response.text(); 
+            
+            // CSVをJSONに変換
+            componentData = parseCsvToJson(csvText);
             renderTable(componentData);
             
         } catch (error) {
             document.getElementById('componentTable').getElementsByTagName('tbody')[0].innerHTML = 
-                `<tr><td colspan="6" style="color: red; text-align: center;">エラーが発生しました: ${error.message}</td></tr>`;
+                `<tr><td colspan="6" style="color: red; text-align: center;">データ取得エラー (直接CSV): ${error.message}</td></tr>`;
         }
     }
+    
+    // --- [追加関数] CSV文字列をJSONオブジェクトの配列に変換する ---
+    function parseCsvToJson(csvText) {
+        const lines = csvText.trim().split('\n');
+        if (lines.length === 0) return [];
+        
+        // ヘッダー（1行目）を取得
+        const headers = lines[0].split(',').map(h => h.trim());
+        
+        const componentList = [];
+        
+        // データ行を処理 (2行目から)
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',');
+            if (values.length !== headers.length) continue; // 行が壊れていたらスキップ
+            
+            let obj = {};
+            headers.forEach((header, j) => {
+                let value = values[j].trim();
+                
+                // GASで行っていたQuantityの数値変換をここで移植
+                if (header === 'Quantity') {
+                    // 空欄または文字列を数値(0)に変換
+                    value = (value !== '' && !isNaN(Number(value))) ? Number(value) : 0; 
+                }
+                
+                obj[header] = value;
+            });
+            componentList.push(obj);
+        }
+        return componentList;
+    }
+
 
     /** データに基づいてテーブルを再描画する */
     function renderTable(data) {
@@ -128,7 +171,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         data.forEach(item => {
             const row = tbody.insertRow();
             
-            // 必要な項目を抽出して表示
+            // 必要な項目を抽出して表示 (ヘッダーの順番に合わせています)
             row.insertCell().textContent = item.Category || '-';
             row.insertCell().textContent = item.Name || '-';
             row.insertCell().textContent = item.Value || '-';
@@ -136,7 +179,8 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
             
             // 在庫数 (Quantity)
             const quantityCell = row.insertCell();
-            if (item.Quantity !== '' && typeof item.Quantity === 'number') {
+            // Quantityのチェックは数値であるかどうかのみを行う（文字列取得時と変わるため）
+            if (typeof item.Quantity === 'number') {
                 quantityCell.textContent = item.Quantity;
                 // 在庫がない場合は赤文字に
                 if (item.Quantity === 0) {
@@ -144,8 +188,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
                     quantityCell.style.fontWeight = 'bold';
                 }
             } else {
-                 // Quantityが数値でない場合は「-」を表示
-                quantityCell.textContent = '-';
+                 quantityCell.textContent = '-';
             }
             
             // URLリンク
@@ -162,13 +205,14 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         });
     }
 
-    /** GASにデータ更新リクエストを送信する */
+    /** GASにデータ更新リクエストを送信する (ここはGAS_URLを使用) */
     async function sendUpdateRequest(action, name, quantity) {
         const messageArea = document.getElementById('messageArea');
         messageArea.textContent = '処理中です...';
         messageArea.style.color = 'orange';
 
         try {
+            // POSTリクエストはGASを経由
             const response = await fetch(GAS_URL, {
                 method: 'POST',
                 headers: {
@@ -186,6 +230,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 
             // 成功したらリストを再読み込み
             if (result.success) {
+                // データの再読み込みは、上記で修正した loadComponentList() が実行されます
                 loadComponentList();
                 // フォームをリセットし、モーダルを閉じる
                 document.getElementById('subtractForm').reset();
@@ -241,7 +286,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
             list.innerHTML = '';
             if (query.length < 1) return; // 1文字から候補表示
 
-            // すべての部品を候補にする (プレースホルダーも含む)
+            // すべての部品を候補にする
             const filtered = componentData.filter(item => 
                 String(item.Name).toLowerCase().includes(query)
             );

@@ -1,17 +1,16 @@
 ---
-title: ソースコードを書く前に
-parent: 象 ーSoftware
+title: HRU-ElectricalCompornent
+parent: 物品管理 ーGoodsManagement
 
 nav_order: 1
 
-author: 佐藤由弥
+author: 鎌田拓也
 last_modified_at: true
 state: notyet
 ---
 # **注意**
 
-ソフトウェアはかなり自由度があるので、紹介しきれないところがあります。より良いものを見つけたらそちらに乗り換えてください。
-
+製作途中です
 # **ソースコードを書く前に**
 
 ソフトウェアの話をする前に前提とした開発環境や開発の進め方等の話をしようと思います。

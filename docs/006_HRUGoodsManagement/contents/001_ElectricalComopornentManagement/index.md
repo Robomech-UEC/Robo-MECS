@@ -2,7 +2,7 @@
 title: HRU-ElectricalCompornent
 parent: 物品管理 ーGoodsManagement
 
-nav_order: 6
+nav_order: 10
 
 author: 鎌田拓也
 last_modified_at: true

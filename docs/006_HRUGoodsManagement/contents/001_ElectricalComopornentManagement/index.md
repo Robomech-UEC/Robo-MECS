@@ -82,7 +82,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 
     // ★★★ データ読み込みのために、ウェブに公開したCSVのURLを設定します ★★★
     // ここをあなたのCSV公開URLに置き換えてください
-    const PUBLIC_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_ddlsooRb5rX5xodrbxiJRRbo3mz_-lyfVOx4quvy5wBLJ42CAO_I19UVE1t_QXv165GEFe6jZ0kY/pub?gid=893393387&single=true&output=csv"; 
+    const PUBLIC_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFO2nfukNJ6MR3_Z6a_sDIfhlMnVcF6vYTy_XpMLj9qRXuAZtA-yHQ1XKSZWsp5CN_omIZbWpoG-VJ/pub?gid=1560376117&single=true&output=csv"; 
     
     let componentData = []; // スプレッドシートから読み込んだ全データ
 

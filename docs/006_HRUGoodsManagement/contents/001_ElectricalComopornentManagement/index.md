@@ -78,7 +78,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 
 <script>
     // ★★★ ステップ2-2で取得したGASのウェブアプリURLに置き換えてください ★★★
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbx02fN0JAUA_BlGvhfcD4GaD79w_HFW5tcAvQi9VqFRFsSLR_IbpZNMqov0KR7U9h9s/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxJUVyEL2w8CkgHKh3NTBqS-bAr6qHqSElTJLO2N4yELR5wzXwiEhc1QD_cjuuI8_98/exec';
     
     let componentData = []; // スプレッドシートから読み込んだ全データ
 

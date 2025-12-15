@@ -1,5 +1,5 @@
 ---
-title: 物品管理
+title: 物品管理 ーGoodsManagement
 nav_order: 6
 
 author: 鎌田拓也

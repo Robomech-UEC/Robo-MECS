@@ -2,7 +2,7 @@ console.log('inventory.js loaded');
 
 // ===== 設定 =====
 const GAS_URL =
-  'https://script.google.com/macros/s/AKfycbxo8za8RKdyWuPu5jx9hmkegjIhWLORiM6qf_lc_do4ZMRz4qQ8mHSK1OeLnX4wgmk2/exec;
+  'https://script.google.com/macros/s/AKfycbxo8za8RKdyWuPu5jx9hmkegjIhWLORiM6qf_lc_do4ZMRz4qQ8mHSK1OeLnX4wgmk2/exec';
 
 let componentData = [];
 

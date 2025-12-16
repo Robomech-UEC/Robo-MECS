@@ -77,12 +77,8 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 </div>
 
 <script>
-    // ★★★ データ更新（書き込み）のために、GASのウェブアプリURLはそのまま残します ★★★
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxJUVyEL2w8CkgHKh3NTBqS-bAr6qHqSElTJLO2N4yELR5wzXwiEhc1QD_cjuuI8_98/exec';
-
-    // ★★★ データ読み込みのために、ウェブに公開したCSVのURLを設定します ★★★
-    // ここをあなたのCSV公開URLに置き換えてください
-    const PUBLIC_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFO2nfukNJ6MR3_Z6a_sDIfhlMnVcF6vYTy_XpMLj9qRXuAZtA-yHQ1XKSZWsp5CN_omIZbWpoG-VJ/pub?gid=1560376117&single=true&output=csv"; 
+    // ★★★ 2-2 でコピーした「ウェブアプリの URL」を貼り付け（読み書き両用） ★★★
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw299qdygrY3n_t-tHpQXfrMYS7tVCGHQFSS1XEAslFlr8u9eEux6M8jAJPsfdR_i9F/exec';
     
     let componentData = []; // スプレッドシートから読み込んだ全データ
 
@@ -104,59 +100,28 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         }
     }
 
-    // --- [変更点] GAS経由から直接CSV読み込みに変更 ---
-    /** 部品リストをCSV公開URLから取得し、テーブルに表示する */
+    // --- 【loadComponentList: JSONを取得するよう修正】 ---
+    /** 部品リストをGASから取得し、テーブルに表示する */
     async function loadComponentList() {
         try {
-            // GAS_URLではなく、CSV公開URLにアクセス
-            const response = await fetch(PUBLIC_CSV_URL); 
-            if (!response.ok) throw new Error('CSV公開URLからのデータ取得に失敗しました');
+            // GAS_URLにアクセスし、JSONとして取得
+            const response = await fetch(GAS_URL);
+            if (!response.ok) throw new Error('GASからのデータ取得に失敗しました');
             
-            // CSVテキストとして取得
-            const csvText = await response.text(); 
+            componentData = await response.json();
             
-            // CSVをJSONに変換
-            componentData = parseCsvToJson(csvText);
+            // GAS側でエラーが返された場合の処理
+            if (componentData.error) {
+                throw new Error(componentData.message);
+            }
+
             renderTable(componentData);
             
         } catch (error) {
             document.getElementById('componentTable').getElementsByTagName('tbody')[0].innerHTML = 
-                `<tr><td colspan="6" style="color: red; text-align: center;">データ取得エラー (直接CSV): ${error.message}</td></tr>`;
+                `<tr><td colspan="6" style="color: red; text-align: center;">エラーが発生しました: ${error.message}</td></tr>`;
         }
     }
-    
-    // --- [追加関数] CSV文字列をJSONオブジェクトの配列に変換する ---
-    function parseCsvToJson(csvText) {
-        const lines = csvText.trim().split('\n');
-        if (lines.length === 0) return [];
-        
-        // ヘッダー（1行目）を取得
-        const headers = lines[0].split(',').map(h => h.trim());
-        
-        const componentList = [];
-        
-        // データ行を処理 (2行目から)
-        for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',');
-            if (values.length !== headers.length) continue; // 行が壊れていたらスキップ
-            
-            let obj = {};
-            headers.forEach((header, j) => {
-                let value = values[j].trim();
-                
-                // GASで行っていたQuantityの数値変換をここで移植
-                if (header === 'Quantity') {
-                    // 空欄または文字列を数値(0)に変換
-                    value = (value !== '' && !isNaN(Number(value))) ? Number(value) : 0; 
-                }
-                
-                obj[header] = value;
-            });
-            componentList.push(obj);
-        }
-        return componentList;
-    }
-
 
     /** データに基づいてテーブルを再描画する */
     function renderTable(data) {
@@ -179,7 +144,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
             
             // 在庫数 (Quantity)
             const quantityCell = row.insertCell();
-            // Quantityのチェックは数値であるかどうかのみを行う（文字列取得時と変わるため）
+            // Quantityのチェックは数値であるかどうかのみを行う
             if (typeof item.Quantity === 'number') {
                 quantityCell.textContent = item.Quantity;
                 // 在庫がない場合は赤文字に
@@ -205,14 +170,13 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         });
     }
 
-    /** GASにデータ更新リクエストを送信する (ここはGAS_URLを使用) */
+    /** GASにデータ更新リクエストを送信する */
     async function sendUpdateRequest(action, name, quantity) {
         const messageArea = document.getElementById('messageArea');
         messageArea.textContent = '処理中です...';
         messageArea.style.color = 'orange';
 
         try {
-            // POSTリクエストはGASを経由
             const response = await fetch(GAS_URL, {
                 method: 'POST',
                 headers: {
@@ -230,9 +194,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 
             // 成功したらリストを再読み込み
             if (result.success) {
-                // データの再読み込みは、上記で修正した loadComponentList() が実行されます
                 loadComponentList();
-                // フォームをリセットし、モーダルを閉じる
                 document.getElementById('subtractForm').reset();
                 document.getElementById('addForm').reset();
                 setTimeout(() => {
@@ -247,7 +209,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         }
     }
 
-    /** フォームの送信処理 (使用/減算) */
+    // --- フォーム処理とオートコンプリート処理は変更なし ---
     document.getElementById('subtractForm').onsubmit = function(event) {
         event.preventDefault();
         const name = document.getElementById('subtractName').value.trim();
@@ -260,7 +222,6 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         sendUpdateRequest('subtract', name, quantity);
     };
 
-    /** フォームの送信処理 (追加/増やす) */
     document.getElementById('addForm').onsubmit = function(event) {
         event.preventDefault();
         const name = document.getElementById('addName').value.trim();
@@ -273,10 +234,6 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         sendUpdateRequest('add', name, quantity);
     };
 
-
-    /* ----------------------------------------------------
-     * 検索候補 (オートコンプリート) 機能
-     * ---------------------------------------------------- */
     function setupAutocomplete(inputId, listId) {
         const input = document.getElementById(inputId);
         const list = document.getElementById(listId);
@@ -284,14 +241,13 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         input.addEventListener('input', function() {
             const query = this.value.toLowerCase();
             list.innerHTML = '';
-            if (query.length < 1) return; // 1文字から候補表示
+            if (query.length < 1) return;
 
-            // すべての部品を候補にする
             const filtered = componentData.filter(item => 
                 String(item.Name).toLowerCase().includes(query)
             );
 
-            filtered.slice(0, 10).forEach(item => { // 最大10件表示
+            filtered.slice(0, 10).forEach(item => {
                 const div = document.createElement('div');
                 div.classList.add('autocomplete-list-item');
                 div.textContent = item.Name;
@@ -303,7 +259,6 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
             });
         });
 
-        // 入力欄からフォーカスが外れたら候補を非表示（遅延させることでクリックを可能にする）
         input.addEventListener('blur', function() {
             setTimeout(() => {
                 list.innerHTML = '';

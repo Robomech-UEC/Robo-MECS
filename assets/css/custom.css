@@ -1,75 +1,113 @@
-/* ======================================= */
-/* 適用推奨のCSS */
-/* ======================================= */
+/* ================================
+   全体
+================================ */
+.container {
+  max-width: 200px;
+  margin: auto;
+}
 
-/* --------------------------------------- */
-/* テーブルスクロールとデザイン (重要) */
-/* --------------------------------------- */
+/* ================================
+   操作ボタン
+================================ */
+.controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
 
+button {
+  padding: 8px 14px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+/* ================================
+   テーブルスクロール（核心）
+================================ */
+.table-wrapper {
+  max-height: 300px;      /* ← ここを好みで調整 */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+}
+
+/* テーブル */
 .component-table {
-    width: 100%;
-    /* テーブルのセル境界線を分離し、スクロールバーによってヘッダーとボディがずれるのを防ぐ */
-    border-collapse: separate; 
-    border-spacing: 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-/* ヘッダーのスタイル（固定表示用） */
-.component-table thead {
-    background-color: #333;
-    color: white;
-    /* スクロールバーの幅を考慮して幅を調整（Windows/Chromeで約15pxを想定） */
-    width: calc(100% - 15px); 
-    display: table; /* ボディの display: block; と連携させるため */
-    table-layout: fixed; /* カラム幅を固定 */
-}
-
-/* ボディ（<tbody>）にスクロールを適用 */
-.component-table tbody {
-    /* ここでテーブルの最大高さを指定します */
-    max-height: 350px; /* 例: 高さ350pxで固定 */
-    overflow-y: scroll; /* 縦方向のスクロールを有効にする */
-    display: block; /* max-heightとoverflowを適用するためにブロック要素にする */
-    width: 100%;
-}
-
-/* tbody内の行もテーブル表示にして幅をtheadと揃える */
-.component-table tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed; /* カラム幅を固定 */
-}
-
-/* --------------------------------------- */
-/* セルとカラム幅の調整 (<thead>と<tbody>で一致させる必要あり) */
-/* --------------------------------------- */
+/* セル */
 .component-table th,
 .component-table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    white-space: nowrap; /* 内容がセル内で折り返さないようにする */
-    overflow: hidden;
-    text-overflow: ellipsis; /* 溢れたテキストを...で省略 */
+  border: 1px solid #ddd;
+  padding: 6px;
 }
 
-/* 各列の幅をJSONのデータ内容に応じて調整 (合計100%) */
-.component-table th:nth-child(1), .component-table td:nth-child(1) { width: 15%; } /* 種類 (Category) */
-.component-table th:nth-child(2), .component-table td:nth-child(2) { width: 25%; } /* 名称 (Name) */
-.component-table th:nth-child(3), .component-table td:nth-child(3) { width: 15%; } /* 値 (Value) */
-.component-table th:nth-child(4), .component-table td:nth-child(4) { width: 15%; } /* 実装 (Mount) */
-.component-table th:nth-child(5), .component-table td:nth-child(5) { width: 10%; } /* 在庫数 (Quantity) */
-.component-table th:nth-child(6), .component-table td:nth-child(6) { width: 20%; } /* URL */
-
-/* ボディ内の行の偶数行に背景色をつけて見やすくする */
-.component-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+/* ヘッダー固定 */
+.component-table th {
+  position: sticky;
+  top: 0;
+  background: #f2f2f2;
+  z-index: 2;
 }
 
-/* その他の基本的なスタイル (省略されている場合を考慮) */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+/* ================================
+   モーダル
+================================ */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  max-width: 500px;
+  border-radius: 10px;
+}
+
+.close {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* ================================
+   オートコンプリート
+================================ */
+.input-container {
+  position: relative;
+}
+
+.autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 2000;
+}
+
+.autocomplete-list div {
+  padding: 6px;
+  cursor: pointer;
+}
+
+.autocomplete-list div:hover {
+  background: #f1f1f1;
 }

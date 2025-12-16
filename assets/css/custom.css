@@ -2,7 +2,7 @@
    全体
 ================================ */
 .container {
-  max-width: 10px;
+  max-width: 100px;
   margin: 10px;
 }
 
@@ -32,7 +32,7 @@ button:hover {
    テーブルスクロール（核心）
 ================================ */
 .table-wrapper {
-  max-height: 300px;      /* ← ここを好みで調整 */
+  max-height: 30px;      /* ← ここを好みで調整 */
   overflow-y: auto;
   border: 1px solid #ccc;
 }

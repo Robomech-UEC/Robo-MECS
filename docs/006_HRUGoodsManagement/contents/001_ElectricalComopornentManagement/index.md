@@ -12,13 +12,6 @@ state: notyet
 Google スプレッドシートと連携し、在庫の確認、追加、使用が行えます。
 
 <div class="container">
-
-<div class="controls">
-  <button onclick="openModal('addModal')">部品を追加 (在庫増加)</button>
-  <button onclick="openModal('subtractModal')">部品を使用 (在庫減算)</button>
-</div>
-
-<!-- ★ テーブルだけを包む（重要） -->
 <div class="table-wrapper"><table id="componentTable" class="component-table">
 <thead>
 <tr>

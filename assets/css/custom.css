@@ -109,4 +109,41 @@ button:hover {
 input[type="text"],
 input[type="number"] {
     width: 100%;
-    padding
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+/* ================================
+   オートコンプリート
+================================ */
+
+.input-container { 
+    position: relative;
+}
+
+/* 候補リスト */
+.autocomplete-list { 
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 2000;
+}
+
+/* 候補アイテム */
+.autocomplete-list div,
+.autocomplete-list-item { 
+    padding: 8px; 
+    cursor: pointer; 
+    font-size: 14px;
+}
+
+.autocomplete-list div:hover,
+.autocomplete-list-item:hover { 
+    background-color: #f1f1f1; 
+}

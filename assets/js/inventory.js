@@ -1,12 +1,10 @@
 console.log('inventory.js loaded');
 
-// ===== 設定 =====
 const GAS_URL =
   'https://script.google.com/macros/s/AKfycbxit-tYoneKhrh6lVvIveavBM0WMLsVshJaeIH7N1FXSVzlfV0Oy8UKdt3HsFG5R48H/exec';
 
 let componentData = [];
 
-// ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', () => {
   loadComponentList();
 
@@ -29,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 });
 
-// ===== 一覧取得(JSONP) =====
 function loadComponentList() {
   const cb = 'jsonp_list_' + Date.now();
 
@@ -45,14 +42,12 @@ function loadComponentList() {
   document.body.appendChild(script);
 }
 
-// ===== 表描画 =====
 function renderTable(data) {
   const tbody = document.querySelector('#componentTable tbody');
   tbody.innerHTML = '';
 
   data.forEach(item => {
     const row = tbody.insertRow();
-
     row.insertCell().textContent = item.Category || '-';
     row.insertCell().textContent = item.Name || '-';
     row.insertCell().textContent = item.Value || '-';
@@ -70,45 +65,4 @@ function renderTable(data) {
       const a = document.createElement('a');
       a.href = item.URL;
       a.textContent = 'Link';
-      a.target = '_blank';
-      url.appendChild(a);
-    } else {
-      url.textContent = '-';
-    }
-  });
-}
-
-// ===== 在庫更新(JSONP) =====
-function sendUpdateRequest(action, name, quantity) {
-  const msg = document.getElementById('messageArea');
-  msg.textContent = '処理中...';
-
-  const cb = 'jsonp_update_' + Date.now();
-
-  window[cb] = result => {
-    msg.textContent = result.message;
-    msg.style.color = result.success ? 'green' : 'red';
-
-    if (result.success) loadComponentList();
-
-    delete window[cb];
-    script.remove();
-  };
-
-  const script = document.createElement('script');
-  script.src =
-    `${GAS_URL}?callback=${cb}` +
-    `&action=${encodeURIComponent(action)}` +
-    `&name=${encodeURIComponent(name)}` +
-    `&quantity=${encodeURIComponent(quantity)}`;
-
-  document.body.appendChild(script);
-}
-
-// ===== モーダル =====
-function openModal(id) {
-  document.getElementById(id).style.display = 'block';
-}
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
-}
+      a.ta

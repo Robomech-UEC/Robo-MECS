@@ -77,40 +77,26 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 </div>
 
 <script>
-    // ★★★ 2-2 でコピーした「ウェブアプリの URL」を貼り付け（読み書き両用） ★★★
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw299qdygrY3n_t-tHpQXfrMYS7tVCGHQFSS1XEAslFlr8u9eEux6M8jAJPsfdR_i9F/exec';
+    // ★★★ [重要] 手順 2 でコピーした「ウェブアプリの URL」を貼り付け（読み書き両用） ★★★
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxdmtCFlSRo_VQCVPvHg5oIhj3ObeIUqEwtFfgro1gZsLCrhk3tCbMjjhck-c25w4Uw/exec'; 
     
-    let componentData = []; // スプレッドシートから読み込んだ全データ
+    let componentData = [];
 
-    /** モーダルを開く */
-    function openModal(id) {
-        document.getElementById(id).style.display = 'block';
-        document.getElementById('messageArea').textContent = '';
-    }
+    // --- モーダル開閉関数などは省略 ---
 
-    /** モーダルを閉じる */
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-
-    // モーダル外クリックで閉じる処理
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
-        }
-    }
-
-    // --- 【loadComponentList: JSONを取得するよう修正】 ---
+    // --- 【loadComponentList: GASからJSONを取得】 ---
     /** 部品リストをGASから取得し、テーブルに表示する */
     async function loadComponentList() {
+        document.getElementById('componentTable').getElementsByTagName('tbody')[0].innerHTML = 
+            `<tr><td colspan="6" style="text-align: center;">データを読み込み中です... (GAS経由)</td></tr>`;
         try {
-            // GAS_URLにアクセスし、JSONとして取得
+            // GETリクエストをGASに送信
             const response = await fetch(GAS_URL);
-            if (!response.ok) throw new Error('GASからのデータ取得に失敗しました');
+            if (!response.ok) throw new Error(`GASサーバー通信エラー: HTTPステータス ${response.status}`);
             
             componentData = await response.json();
             
-            // GAS側でエラーが返された場合の処理
+            // GAS側で意図的にエラーを返した場合の処理 (デバッグ情報)
             if (componentData.error) {
                 throw new Error(componentData.message);
             }
@@ -119,14 +105,14 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
             
         } catch (error) {
             document.getElementById('componentTable').getElementsByTagName('tbody')[0].innerHTML = 
-                `<tr><td colspan="6" style="color: red; text-align: center;">エラーが発生しました: ${error.message}</td></tr>`;
+                `<tr style="background-color: #fdd;"><td colspan="6" style="color: red; text-align: center;">データ取得エラー: ${error.message}</td></tr>`;
         }
     }
 
-    /** データに基づいてテーブルを再描画する */
+    // --- (renderTable および POST 処理関数は省略) ---
     function renderTable(data) {
         const tbody = document.getElementById('componentTable').getElementsByTagName('tbody')[0];
-        tbody.innerHTML = ''; // 一旦tbodyをクリア
+        tbody.innerHTML = ''; 
         
         if (data.length === 0) {
              tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">部品が登録されていません。</td></tr>`;
@@ -136,18 +122,14 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         data.forEach(item => {
             const row = tbody.insertRow();
             
-            // 必要な項目を抽出して表示 (ヘッダーの順番に合わせています)
             row.insertCell().textContent = item.Category || '-';
             row.insertCell().textContent = item.Name || '-';
             row.insertCell().textContent = item.Value || '-';
             row.insertCell().textContent = item['Shape(SMD/THD)'] || '-';
             
-            // 在庫数 (Quantity)
             const quantityCell = row.insertCell();
-            // Quantityのチェックは数値であるかどうかのみを行う
             if (typeof item.Quantity === 'number') {
                 quantityCell.textContent = item.Quantity;
-                // 在庫がない場合は赤文字に
                 if (item.Quantity === 0) {
                     quantityCell.style.color = 'red';
                     quantityCell.style.fontWeight = 'bold';
@@ -156,7 +138,6 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
                  quantityCell.textContent = '-';
             }
             
-            // URLリンク
             const urlCell = row.insertCell();
             if (item.URL) {
                 const link = document.createElement('a');
@@ -170,7 +151,6 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
         });
     }
 
-    /** GASにデータ更新リクエストを送信する */
     async function sendUpdateRequest(action, name, quantity) {
         const messageArea = document.getElementById('messageArea');
         messageArea.textContent = '処理中です...';
@@ -192,7 +172,6 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
             messageArea.textContent = result.message;
             messageArea.style.color = result.success ? 'green' : 'red';
 
-            // 成功したらリストを再読み込み
             if (result.success) {
                 loadComponentList();
                 document.getElementById('subtractForm').reset();
@@ -200,7 +179,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
                 setTimeout(() => {
                     closeModal('subtractModal');
                     closeModal('addModal');
-                }, 1000); // 1秒後に閉じる
+                }, 1000); 
             }
 
         } catch (error) {
@@ -208,8 +187,8 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
             messageArea.style.color = 'red';
         }
     }
-
-    // --- フォーム処理とオートコンプリート処理は変更なし ---
+    
+    // ... (フォーム処理とオートコンプリート処理は省略) ...
     document.getElementById('subtractForm').onsubmit = function(event) {
         event.preventDefault();
         const name = document.getElementById('subtractName').value.trim();

@@ -1,79 +1,73 @@
 ---
 title: HRU-ElectricalCompornent
 parent: 物品管理 ーGoodsManagement
-
 nav_order: 10
-
 author: 鎌田拓也
 last_modified_at: true
 state: notyet
 ---
+
 # **物品管理システム**
 
 Google スプレッドシートと連携し、在庫の確認、追加、使用が行えます。
 
 <div class="container">
-    <div class="controls">
-        <button onclick="openModal('addModal')">部品を追加 (在庫増加)</button>
-        <button onclick="openModal('subtractModal')">部品を使用 (在庫減算)</button>
+  <div class="controls">
+    <button onclick="openModal('addModal')">部品を追加 (在庫増加)</button>
+    <button onclick="openModal('subtractModal')">部品を使用 (在庫減算)</button>
+  </div>
+
+  <table id="componentTable" class="component-table">
+    <thead>
+      <tr>
+        <th>種類 (Category)</th>
+        <th>名称 (Name)</th>
+        <th>値 (Value)</th>
+        <th>実装 (Mount)</th>
+        <th>在庫数 (Quantity)</th>
+        <th>URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="6" style="text-align:center;">
+          データを読み込み中です...
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p id="messageArea" style="margin-top:15px;font-weight:bold;"></p>
+
+  <!-- 減算 -->
+  <div id="subtractModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('subtractModal')">&times;</span>
+      <h2>部品の使用 (在庫減算)</h2>
+      <form id="subtractForm">
+        <label>部品名 (Name)</label>
+        <input type="text" id="subtractName" required>
+        <label>使用個数</label>
+        <input type="number" id="subtractQuantity" min="1" required>
+        <button type="submit">在庫を減らす</button>
+      </form>
     </div>
+  </div>
 
-    <table id="componentTable" class="component-table">
-        <thead>
-            <tr>
-                <th>種類 (Category)</th>
-                <th>名称 (Name)</th>
-                <th>値 (Value)</th>
-                <th>実装 (Mount)</th>
-                <th>**在庫数 (Quantity)**</th>
-                <th>URL</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td colspan="6" style="text-align: center;">データを読み込み中です...</td></tr>
-        </tbody>
-    </table>
-    <p id="messageArea" style="margin-top: 15px; font-weight: bold;"></p>
-
-    <div id="subtractModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('subtractModal')">&times;</span>
-            <h2>部品の使用 (在庫減算)</h2>
-            <form id="subtractForm">
-                <label for="subtractName">部品名 (Name):</label>
-                <div class="input-container">
-                    <input type="text" id="subtractName" name="name" required style="width: 100%; box-sizing: border-box; padding: 8px;">
-                    <div id="autocompleteListSubtract" class="autocomplete-list"></div>
-                </div>
-                
-                <label for="subtractQuantity" style="margin-top: 10px; display: block;">使用個数 (Quantity):</label>
-                <input type="number" id="subtractQuantity" name="quantity" min="1" required style="width: 100%; box-sizing: border-box; padding: 8px;">
-                
-                <button type="submit" style="margin-top: 15px;">在庫を減らす</button>
-            </form>
-        </div>
+  <!-- 追加 -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('addModal')">&times;</span>
+      <h2>部品の追加 (在庫増加)</h2>
+      <form id="addForm">
+        <label>部品名 (Name)</label>
+        <input type="text" id="addName" required>
+        <label>追加個数</label>
+        <input type="number" id="addQuantity" min="1" required>
+        <button type="submit">在庫を追加する</button>
+      </form>
     </div>
-
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">&times;</span>
-            <h2>部品の追加 (在庫増加)</h2>
-            <p>この機能は、既存部品の在庫数を増やすために使います。</p>
-
-            <form id="addForm">
-                <label for="addName">部品名 (Name):</label>
-                <div class="input-container">
-                    <input type="text" id="addName" name="name" required style="width: 100%; box-sizing: border-box; padding: 8px;">
-                     <div id="autocompleteListAdd" class="autocomplete-list"></div>
-                </div>
-
-                <label for="addQuantity" style="margin-top: 10px; display: block;">追加個数 (Quantity):</label>
-                <input type="number" id="addQuantity" name="quantity" min="1" required style="width: 100%; box-sizing: border-box; padding: 8px;">
-                
-                <button type="submit" style="margin-top: 15px; background-color: green;">在庫を追加する</button>
-            </form>
-        </div>
-    </div>
+  </div>
 </div>
 
 <script src="{{ '/assets/js/inventory.js' | relative_url }}"></script>

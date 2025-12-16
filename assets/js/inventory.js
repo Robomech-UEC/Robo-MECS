@@ -10,15 +10,12 @@ let componentData = [];
 document.addEventListener('DOMContentLoaded', () => {
   loadComponentList();
 
-  setupAutocomplete('subtractName', 'autocompleteListSubtract');
-  setupAutocomplete('addName', 'autocompleteListAdd');
-
   document.getElementById('subtractForm').onsubmit = e => {
     e.preventDefault();
     sendUpdateRequest(
       'subtract',
-      document.getElementById('subtractName').value,
-      document.getElementById('subtractQuantity').value
+      subtractName.value,
+      subtractQuantity.value
     );
   };
 
@@ -26,13 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     sendUpdateRequest(
       'add',
-      document.getElementById('addName').value,
-      document.getElementById('addQuantity').value
+      addName.value,
+      addQuantity.value
     );
   };
+
+  // サジェスト設定
+  setupAutocomplete(
+    document.getElementById('subtractName'),
+    document.getElementById('autocompleteListSubtract')
+  );
+  setupAutocomplete(
+    document.getElementById('addName'),
+    document.getElementById('autocompleteListAdd')
+  );
 });
 
-// ===== 一覧取得（JSONP）=====
+// ===== 一覧取得(JSONP) =====
 function loadComponentList() {
   const cb = 'jsonp_list_' + Date.now();
 
@@ -52,12 +59,6 @@ function loadComponentList() {
 function renderTable(data) {
   const tbody = document.querySelector('#componentTable tbody');
   tbody.innerHTML = '';
-
-  if (!data || data.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;">データなし</td></tr>';
-    return;
-  }
 
   data.forEach(item => {
     const row = tbody.insertRow();
@@ -87,11 +88,10 @@ function renderTable(data) {
   });
 }
 
-// ===== 在庫更新（JSONP）=====
+// ===== 在庫更新(JSONP) =====
 function sendUpdateRequest(action, name, quantity) {
   const msg = document.getElementById('messageArea');
   msg.textContent = '処理中...';
-  msg.style.color = 'orange';
 
   const cb = 'jsonp_update_' + Date.now();
 
@@ -117,32 +117,36 @@ function sendUpdateRequest(action, name, quantity) {
 }
 
 // ===== オートコンプリート =====
-function setupAutocomplete(inputId, listId) {
-  const input = document.getElementById(inputId);
-  const list = document.getElementById(listId);
-
+function setupAutocomplete(input, list) {
   input.addEventListener('input', () => {
+    const keyword = input.value.toLowerCase();
     list.innerHTML = '';
-    const q = input.value.toLowerCase();
-    if (!q) return;
 
-    componentData
-      .filter(i => i.Name && i.Name.toLowerCase().includes(q))
+    if (!keyword) return;
+
+    const names = [...new Set(componentData.map(c => c.Name))];
+
+    names
+      .filter(name => name && name.toLowerCase().includes(keyword))
       .slice(0, 10)
-      .forEach(i => {
-        const d = document.createElement('div');
-        d.className = 'autocomplete-list-item';
-        d.textContent = i.Name;
-        d.onclick = () => {
-          input.value = i.Name;
+      .forEach(name => {
+        const item = document.createElement('div');
+        item.textContent = name;
+        item.className = 'autocomplete-list-item';
+
+        item.onclick = () => {
+          input.value = name;
           list.innerHTML = '';
         };
-        list.appendChild(d);
+
+        list.appendChild(item);
       });
   });
 
-  input.addEventListener('blur', () => {
-    setTimeout(() => (list.innerHTML = ''), 200);
+  document.addEventListener('click', e => {
+    if (!list.contains(e.target) && e.target !== input) {
+      list.innerHTML = '';
+    }
   });
 }
 

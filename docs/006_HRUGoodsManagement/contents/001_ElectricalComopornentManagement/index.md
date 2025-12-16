@@ -78,7 +78,7 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 
 <script>
     // ★★★ [重要] 手順 2 でコピーした「ウェブアプリの URL」を貼り付け（読み書き両用） ★★★
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxdmtCFlSRo_VQCVPvHg5oIhj3ObeIUqEwtFfgro1gZsLCrhk3tCbMjjhck-c25w4Uw/exec'; 
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz2bdYi_k-RbdUuXzvly4QI1OAugs489jqGxe8ccSml1HtVe80mkscLa78_X8KxSq1h/exec'; 
     
     let componentData = [];
 

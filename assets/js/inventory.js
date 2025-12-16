@@ -2,16 +2,13 @@ console.log('inventory.js loaded');
 
 // ===== 設定 =====
 const GAS_URL =
-  'https://script.google.com/macros/s/AKfycbwrdRD0rMXJvgCuzv6htC0EYg8fkKlAogzOMHqXjRVLXjbZeZuHwYSvWp_fDZuKUiRF/exec';
+  'https://script.google.com/macros/s/AKfycbz524_kTqGa15To70WsAbdOb6fBQPWXyK8LOxI2uDqqdJydb1pJHNe-71PpNJ6Ahbnw/exec';
 
 let componentData = [];
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', () => {
   loadComponentList();
-
-  setupAutocomplete('subtractName', 'autocompleteListSubtract');
-  setupAutocomplete('addName', 'autocompleteListAdd');
 
   document.getElementById('subtractForm').onsubmit = e => {
     e.preventDefault();
@@ -32,20 +29,20 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 });
 
-// ===== 一覧取得 =====
-async function loadComponentList() {
-  const tbody = document.querySelector('#componentTable tbody');
-  tbody.innerHTML = `<tr><td colspan="6">読み込み中...</td></tr>`;
+// ===== 一覧取得(JSONP) =====
+function loadComponentList() {
+  const cb = 'jsonp_list_' + Date.now();
 
-  try {
-    const res = await fetch(GAS_URL);
-    componentData = await res.json();
-    renderTable(componentData);
-  } catch (e) {
-    tbody.innerHTML =
-      `<tr><td colspan="6" style="color:red;">取得失敗</td></tr>`;
-    console.error(e);
-  }
+  window[cb] = data => {
+    componentData = data;
+    renderTable(data);
+    delete window[cb];
+    script.remove();
+  };
+
+  const script = document.createElement('script');
+  script.src = `${GAS_URL}?callback=${cb}`;
+  document.body.appendChild(script);
 }
 
 // ===== 表描画 =====
@@ -81,52 +78,32 @@ function renderTable(data) {
   });
 }
 
-// ===== 在庫更新（GET）=====
-async function sendUpdateRequest(action, name, quantity) {
+// ===== 在庫更新(JSONP) =====
+function sendUpdateRequest(action, name, quantity) {
   const msg = document.getElementById('messageArea');
   msg.textContent = '処理中...';
 
-  const url =
-    `${GAS_URL}?action=${encodeURIComponent(action)}` +
-    `&name=${encodeURIComponent(name)}` +
-    `&quantity=${encodeURIComponent(quantity)}`;
+  const cb = 'jsonp_update_' + Date.now();
 
-  try {
-    const res = await fetch(url);
-    const result = await res.json();
+  window[cb] = result => {
     msg.textContent = result.message;
     msg.style.color = result.success ? 'green' : 'red';
 
     if (result.success) loadComponentList();
-  } catch (e) {
-    msg.textContent = '通信エラー';
-    console.error(e);
-  }
-}
 
-// ===== オートコンプリート =====
-function setupAutocomplete(inputId, listId) {
-  const input = document.getElementById(inputId);
-  const list = document.getElementById(listId);
+    delete window[cb];
+    script.remove();
+  };
 
-  input.addEventListener('input', () => {
-    list.innerHTML = '';
-    const q = input.value.toLowerCase();
-    if (!q) return;
+  const url =
+    `${GAS_URL}?callback=${cb}` +
+    `&action=${encodeURIComponent(action)}` +
+    `&name=${encodeURIComponent(name)}` +
+    `&quantity=${encodeURIComponent(quantity)}`;
 
-    componentData
-      .filter(i => i.Name.toLowerCase().includes(q))
-      .slice(0, 10)
-      .forEach(i => {
-        const d = document.createElement('div');
-        d.textContent = i.Name;
-        d.onclick = () => {
-          input.value = i.Name;
-          list.innerHTML = '';
-        };
-        list.appendChild(d);
-      });
-  });
+  const script = document.createElement('script');
+  script.src = url;
+  document.body.appendChild(script);
 }
 
 // ===== モーダル =====

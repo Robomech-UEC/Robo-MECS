@@ -13,75 +13,91 @@ Google スプレッドシートと連携し、在庫の確認、追加、使用�
 
 <div class="container">
 
-    <div class="controls">
-        <button onclick="openModal('addModal')">部品を追加</button>
-        <button onclick="openModal('subtractModal')">部品を使用</button>
-    </div>
+  <div class="controls">
+    <button onclick="openModal('addModal')">
+      部品を追加 (在庫増加)
+    </button>
+    <button onclick="openModal('subtractModal')">
+      部品を使用 (在庫減算)
+    </button>
+  </div>
 
-    <!-- ★ テーブル専用スクロール領域 -->
-    <div class="table-wrapper">
-        <table id="componentTable" class="component-table">
-            <thead>
-                <tr>
-                    <th>種類</th>
-                    <th>名称</th>
-                    <th>値</th>
-                    <th>実装</th>
-                    <th>在庫</th>
-                    <th>URL</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="6">読み込み中...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <!-- ★★★ ここが重要：テーブル専用スクロール領域 ★★★ -->
+  <div class="table-wrapper">
+    <table id="componentTable" class="component-table">
+      <thead>
+        <tr>
+          <th>種類 (Category)</th>
+          <th>名称 (Name)</th>
+          <th>値 (Value)</th>
+          <th>実装 (Mount)</th>
+          <th>在庫数 (Quantity)</th>
+          <th>URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="6" style="text-align:center;">
+            データを読み込み中です...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <p id="messageArea"></p>
+  <p id="messageArea" style="margin-top:15px; font-weight:bold;"></p>
 
-    <!-- 使用 -->
-    <div id="subtractModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('subtractModal')">&times;</span>
-            <h2>部品の使用</h2>
+  <!-- ===== 使用（減算）モーダル ===== -->
+  <div id="subtractModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('subtractModal')">&times;</span>
 
-            <form id="subtractForm">
-                <label>部品名</label>
-                <div class="input-container">
-                    <input type="text" id="subtractName" required>
-                    <div id="autocompleteListSubtract" class="autocomplete-list"></div>
-                </div>
+      <h2>部品の使用 (在庫減算)</h2>
 
-                <label>使用個数</label>
-                <input type="number" id="subtractQuantity" min="1" required>
-
-                <button type="submit">減らす</button>
-            </form>
+      <form id="subtractForm">
+        <label for="subtractName">部品名 (Name)</label>
+        <div class="input-container">
+          <input type="text" id="subtractName" required>
+          <div id="autocompleteListSubtract" class="autocomplete-list"></div>
         </div>
+
+        <label style="margin-top:10px; display:block;">
+          使用個数 (Quantity)
+        </label>
+        <input type="number" id="subtractQuantity" min="1" required>
+
+        <button type="submit" style="margin-top:15px;">
+          在庫を減らす
+        </button>
+      </form>
     </div>
+  </div>
 
-    <!-- 追加 -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">&times;</span>
-            <h2>部品の追加</h2>
+  <!-- ===== 追加（加算）モーダル ===== -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('addModal')">&times;</span>
 
-            <form id="addForm">
-                <label>部品名</label>
-                <div class="input-container">
-                    <input type="text" id="addName" required>
-                    <div id="autocompleteListAdd" class="autocomplete-list"></div>
-                </div>
+      <h2>部品の追加 (在庫増加)</h2>
 
-                <label>追加個数</label>
-                <input type="number" id="addQuantity" min="1" required>
-
-                <button type="submit">追加</button>
-            </form>
+      <form id="addForm">
+        <label for="addName">部品名 (Name)</label>
+        <div class="input-container">
+          <input type="text" id="addName" required>
+          <div id="autocompleteListAdd" class="autocomplete-list"></div>
         </div>
+
+        <label style="margin-top:10px; display:block;">
+          追加個数 (Quantity)
+        </label>
+        <input type="number" id="addQuantity" min="1" required>
+
+        <button type="submit" style="margin-top:15px; background-color:green;">
+          在庫を追加する
+        </button>
+      </form>
     </div>
+  </div>
 
 </div>
 

@@ -35,7 +35,7 @@ button:hover {
 ================================ */
 
 .table-wrapper {
-  max-height: 400px;        /* ← ここが重要 */
+  max-height: 100px;        /* ← ここが重要 */
   overflow-y: auto;
   border: 1px solid #ccc;
 }

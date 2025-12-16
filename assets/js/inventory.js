@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     sendUpdateRequest(
       'subtract',
-      subtractName.value,
-      subtractQuantity.value
+      document.getElementById('subtractName').value,
+      document.getElementById('subtractQuantity').value
     );
   };
 
@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     sendUpdateRequest(
       'add',
-      addName.value,
-      addQuantity.value
+      document.getElementById('addName').value,
+      document.getElementById('addQuantity').value
     );
   };
 });
@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===== 一覧取得(JSONP) =====
 function loadComponentList() {
   const cb = 'jsonp_list_' + Date.now();
-  const script = document.createElement('script');
 
   window[cb] = data => {
     componentData = data;
@@ -41,6 +40,7 @@ function loadComponentList() {
     script.remove();
   };
 
+  const script = document.createElement('script');
   script.src = `${GAS_URL}?callback=${cb}`;
   document.body.appendChild(script);
 }
@@ -80,13 +80,10 @@ function renderTable(data) {
 
 // ===== 在庫更新(JSONP) =====
 function sendUpdateRequest(action, name, quantity) {
-  if (!name || !quantity) return;
-
   const msg = document.getElementById('messageArea');
   msg.textContent = '処理中...';
 
   const cb = 'jsonp_update_' + Date.now();
-  const script = document.createElement('script');
 
   window[cb] = result => {
     msg.textContent = result.message;
@@ -98,6 +95,7 @@ function sendUpdateRequest(action, name, quantity) {
     script.remove();
   };
 
+  const script = document.createElement('script');
   script.src =
     `${GAS_URL}?callback=${cb}` +
     `&action=${encodeURIComponent(action)}` +

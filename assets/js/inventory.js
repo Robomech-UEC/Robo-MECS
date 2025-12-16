@@ -6,9 +6,29 @@ let componentData = [];
 
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('inventory.js loaded');
+
     loadComponentList();
     setupAutocomplete('subtractName', 'autocompleteListSubtract');
     setupAutocomplete('addName', 'autocompleteListAdd');
+
+    document.getElementById('subtractForm').onsubmit = e => {
+        e.preventDefault();
+        sendUpdateRequest(
+            'subtract',
+            subtractName.value,
+            subtractQuantity.value
+        );
+    };
+
+    document.getElementById('addForm').onsubmit = e => {
+        e.preventDefault();
+        sendUpdateRequest(
+            'add',
+            addName.value,
+            addQuantity.value
+        );
+    };
 });
 
 // ===== データ取得 =====
@@ -40,7 +60,7 @@ function renderTable(data) {
         row.insertCell().textContent = item['Shape(SMD/THD)'] || '-';
 
         const q = row.insertCell();
-        q.textContent = item.Quantity;
+        q.textContent = item.Quantity ?? '-';
         if (item.Quantity === 0) {
             q.style.color = 'red';
             q.style.fontWeight = 'bold';
@@ -76,25 +96,6 @@ async function sendUpdateRequest(action, name, quantity) {
     if (result.success) loadComponentList();
 }
 
-// ===== フォーム =====
-document.getElementById('subtractForm').onsubmit = e => {
-    e.preventDefault();
-    sendUpdateRequest(
-        'subtract',
-        subtractName.value,
-        subtractQuantity.value
-    );
-};
-
-document.getElementById('addForm').onsubmit = e => {
-    e.preventDefault();
-    sendUpdateRequest(
-        'add',
-        addName.value,
-        addQuantity.value
-    );
-};
-
 // ===== オートコンプリート =====
 function setupAutocomplete(inputId, listId) {
     const input = document.getElementById(inputId);
@@ -106,7 +107,7 @@ function setupAutocomplete(inputId, listId) {
         if (!q) return;
 
         componentData
-            .filter(i => i.Name.toLowerCase().includes(q))
+            .filter(i => i.Name?.toLowerCase().includes(q))
             .slice(0, 10)
             .forEach(i => {
                 const d = document.createElement('div');

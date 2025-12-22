@@ -1,0 +1,32 @@
+/* ================================
+   スプレッドシート一覧だけスクロール
+================================ */
+
+.table-wrapper {
+  max-height: 320px;        /* ← 好みで調整 */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+/* テーブル */
+.component-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+/* セル */
+.component-table th,
+.component-table td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+}
+
+/* ヘッダー固定 */
+.component-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f2f2f2;
+  z-index: 5;
+}

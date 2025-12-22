@@ -1,15 +1,16 @@
-/* ================================
-   物品管理：テーブルだけスクロール
-================================ */
+/* ==================================================
+   HRU 物品管理システム
+   ・テーブル部分だけを縦スクロール
+================================================== */
 
-/* テーブルを包む */
+/* テーブルを包むスクロール領域 */
 .table-wrapper {
-  max-height: 200px;
+  max-height: 200px;        /* 表示帯の高さ（調整可） */
   overflow-y: auto;
   overflow-x: hidden;
   border: 1px solid #ccc;
-  background: #fff;
-  margin-bottom: 20px;
+  background-color: #ffffff;
+  margin: 16px 0;
 }
 
 /* テーブル本体 */
@@ -19,10 +20,12 @@
   font-size: 14px;
 }
 
+/* セル */
 .component-table th,
 .component-table td {
   border: 1px solid #ddd;
   padding: 6px 8px;
+  text-align: left;
 }
 
 /* ヘッダー固定 */
@@ -31,4 +34,9 @@
   top: 0;
   background-color: #f2f2f2;
   z-index: 10;
+}
+
+/* 在庫 0 を強調 */
+.component-table td:nth-child(5) {
+  font-weight: bold;
 }

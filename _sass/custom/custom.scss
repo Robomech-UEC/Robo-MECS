@@ -1,15 +1,13 @@
 /* ==================================================
    HRU 物品管理システム用 CSS
-   テーブル部分だけをスクロールさせる
 ================================================== */
 
-/* テーブルを包むスクロール領域 */
 .table-wrapper {
-  max-height: 200px;      /* ← 表示帯の高さ */
+  max-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
-  border: 1px solid #ccc;
-  background-color: #ffffff;
+  border: 2px solid red; /* ← 確認用 */
+  background-color: #fff;
   margin: 16px 0;
 }
 
@@ -25,7 +23,6 @@
 .component-table td {
   border: 1px solid #ddd;
   padding: 6px 8px;
-  text-align: left;
 }
 
 /* ヘッダー固定 */

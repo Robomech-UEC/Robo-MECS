@@ -1,15 +1,8 @@
----
----
-{%- if site.color_scheme and site.color_scheme != "nil" -%}
-  {%- assign color_scheme = site.color_scheme -%}
-{%- else -%}
-  {%- assign color_scheme = "light" -%}
-{%- endif -%}
+/* ================================
+   物品管理：テーブルだけスクロール
+================================ */
 
-{%- capture scss -%}
-{% include css/just-the-docs.scss.liquid color_scheme=color_scheme %}
-
-/* ===== テーブルだけスクロール ===== */
+/* テーブルを包む */
 .table-wrapper {
   max-height: 200px;
   overflow-y: auto;
@@ -19,9 +12,11 @@
   margin-bottom: 20px;
 }
 
+/* テーブル本体 */
 .component-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
 }
 
 .component-table th,
@@ -30,23 +25,10 @@
   padding: 6px 8px;
 }
 
+/* ヘッダー固定 */
 .component-table thead th {
   position: sticky;
   top: 0;
-  background: #f2f2f2;
+  background-color: #f2f2f2;
   z-index: 10;
 }
-
-/* ナビゲーション（元からあったやつ） */
-.site-nav ul li a {
-  background-image: linear-gradient(
-    -90deg,
-    rgba($feedback-color, 1) 0%,
-    rgba($feedback-color, 0.8) 80%,
-    rgba($feedback-color, 0) 100%
-  );
-}
-
-{%- endcapture -%}
-
-{{ scss | scssify }}

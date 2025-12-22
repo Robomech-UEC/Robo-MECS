@@ -4,8 +4,7 @@ theme: just-the-docs
 
 url: https://just-the-docs.github.io
 
-head:
-  custom_css: assets/css/custom.css
+
 
 aux_links:
   Robomech Work Group: https://github.com/Robomech-UEC

@@ -1,7 +1,7 @@
 console.log('inventory.js loaded');
 
 const GAS_URL =
-  'https://script.google.com/macros/s/AKfycbx3IWyusB3uBFehNBDbWZIQQ8dPN4cqQbOji8qRRBQmz8K4eWQeYTAc50qm8UJ2vBwB/exec';
+  'https://script.google.com/macros/s/AKfycbyzvpW6QnWF1LHUDoEV9-QnmiV20hNJlUaQa9PB2qGucVPzinxc0E9ZS2c-rvnsy5UF/exec';
 
 let componentData = [];
 

@@ -6,55 +6,38 @@
   {%- assign color_scheme = "light" -%}
 {%- endif -%}
 
-{%- capture newline %}
-{% endcapture -%}
-
 {%- capture scss -%}
 {% include css/just-the-docs.scss.liquid color_scheme=color_scheme %}
 
-/* ==================================================
-   物品管理ページ用カスタムCSS
-   ・ページ内でテーブルだけ縦スクロール
-================================================== */
-
-/* テーブルを包むスクロール領域
-   ※ JSで確認済みの値をそのままCSS化 */
+/* ===== テーブルだけスクロール ===== */
 .table-wrapper {
-  max-height: 200px;     /* ← JSで効いた値と同じ */
+  max-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
   border: 1px solid #ccc;
-  background: #ffffff;
+  background: #fff;
   margin-bottom: 20px;
 }
 
-/* テーブル本体 */
 .component-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
 }
 
-/* セル */
 .component-table th,
 .component-table td {
   border: 1px solid #ddd;
   padding: 6px 8px;
-  text-align: left;
 }
 
-/* ヘッダー固定 */
 .component-table thead th {
   position: sticky;
   top: 0;
-  background-color: #f2f2f2;
+  background: #f2f2f2;
   z-index: 10;
 }
 
-/* ==================================================
-   既存ナビゲーションの装飾（元からあったやつ）
-================================================== */
-
+/* ナビゲーション（元からあったやつ） */
 .site-nav ul li a {
   background-image: linear-gradient(
     -90deg,

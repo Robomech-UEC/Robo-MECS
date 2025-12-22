@@ -1,34 +1,5 @@
-/* ==================================================
-   HRU 物品管理システム用 CSS
-================================================== */
-
 .table-wrapper {
   max-height: 200px;
   overflow-y: auto;
-  overflow-x: hidden;
-  border: 2px solid red; /* ← 確認用 */
-  background-color: #fff;
-  margin: 16px 0;
-}
-
-/* テーブル本体 */
-.component-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-/* セル */
-.component-table th,
-.component-table td {
-  border: 1px solid #ddd;
-  padding: 6px 8px;
-}
-
-/* ヘッダー固定 */
-.component-table thead th {
-  position: sticky;
-  top: 0;
-  background-color: #f2f2f2;
-  z-index: 10;
+  border: 5px solid red;
 }
